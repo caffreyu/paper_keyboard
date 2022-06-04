@@ -1,0 +1,11 @@
+%YAML 1.0
+---
+image_width: 640
+image_height: 480
+camera_matrix: !!opencv-matrix
+  rows: 3
+  cols: 3
+  dt: d
+  data: [912.89955698, 0, 315.02345113, 
+        0, 910.27668726, 234.48790196,
+        0, 0, 1]
