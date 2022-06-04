@@ -6,7 +6,10 @@ import numpy as np
 import pickle as pk
 import sys
 
-WAIT_TIME = int(sys.argv[1]) # time waited until asking for keyboard input
+if len(sys.argv) > 1:
+    WAIT_TIME = int(sys.argv[1]) # time waited until asking for keyboard input
+else: 
+    WAIT_TIME = 5
 
 # Load pickle file
 f = open('stored_pattern.pickle', 'rb')
@@ -53,7 +56,7 @@ while True:
 
                     # Update time
                     p_time = c_time
-                    
+
     cv2.imshow('Image', img)
     # cv2.waitKey(1)
     if cv2.waitKey(1) & 0xFF == ord('q'):
