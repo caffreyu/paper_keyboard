@@ -12,12 +12,15 @@ import time
 import sys
 import yaml
 from copy import deepcopy
+from scipy.ndimage.filters import gaussian_filter
 
-config_fname = './data/config.yaml'
+# cam matrix
+config_fname = './data/config/config.yaml'
 fh = cv2.FileStorage(config_fname, cv2.FILE_STORAGE_READ)
 cam_mat = fh.getNode('camera_matrix').mat()
 img_w = int(fh.getNode('image_width').real())
 img_h = int(fh.getNode('image_height').real())
+print (cam_mat.shape)
 
 print (cam_mat)
 
@@ -25,11 +28,14 @@ print (cam_mat)
 fname, mat_method = sys.argv[1], sys.argv[2]
 
 target = plt.imread(fname)
+target = cv2.normalize(target, None, 0, 255, cv2.NORM_MINMAX).astype('uint8')
+target = gaussian_filter(target, sigma = 2)
+print (target.shape)
 target_show = cv2.cvtColor(target, cv2.COLOR_BGR2RGB)
 target_g = cv2.cvtColor(target, cv2.COLOR_BGR2GRAY)
 
 print ('Now showing target')
-plt.imshow(target)
+plt.imshow(target_g)
 plt.show()
 
 cap = cv2.VideoCapture(-1)
@@ -41,10 +47,17 @@ while True:
     
     _, test = cap.read()
 
-    test = cv2.resize(test, (img_w, img_h))
-    test_g = cv2.cvtColor(test, cv2.COLOR_RGB2GRAY)
+    # print (test[0, 0, 0], test[0, 0, 0] == 0)
 
+    if test[0, 0, 0] == 0: continue
+
+    plt.imshow(test)
+    plt.show()
+
+    # test = cv2.resize(test, (img_w, img_h))
+    test_g = cv2.cvtColor(test, cv2.COLOR_RGB2GRAY)
     cor1, cor2 = get_matches(test_g, target_g)
+
     # cor1, cor2 = np.array(cor1).T, np.array(cor2).T
 
     print (f'After processing total number: {len(cor1)}')
@@ -56,23 +69,25 @@ while True:
     else:
         print ('Done getting matches')
         # Essential matrix
-        if mat_method == 'f': 
+        if mat_method == 'e': 
             mat, mask = cv2.findEssentialMat(
                                             points1 = cor1, 
                                             points2 = cor2, 
                                             cameraMatrix = cam_mat,
                                             method = cv2.RANSAC,
                                             prob = 0.999,
-                                            threshold = 100
+                                            threshold = 0.1
                                             )
         # Fundamental matrix
-        if mat_method == 'e':
+        if mat_method == 'f':
             mat, mask = cv2.findFundamentalMat(
                                             points1 = cor1, 
                                             points2 = cor2, 
                                             method = cv2.FM_RANSAC,
                                             ransacReprojThreshold = 3,
-                                            confidence = 0.99)
+                                            confidence = 0.99,
+                                            maxIters = 1000
+                                            )
         
         print ('Done finding the matrix')
 
@@ -128,8 +143,9 @@ def plot_epipolar_lines(img1, img2, F, cor1, cor2):
 
         x1_n, x2_n = deepcopy(x1), deepcopy(x2)
 
-        x1_n[0], x1_n[1] = x1_n[0] / h1, x1_n[1] / w1
-        x2_n[0], x2_n[1] = x2_n[0] / h2, x2_n[1] / w2
+        # x1_n[0], x1_n[1] = x1_n[0] / h1, x1_n[1] / w1
+        # x2_n[0], x2_n[1] = x2_n[0] / h2, x2_n[1] / w2
+        # print (x2_n.T @ F)
         print (x2_n.T @ F @ x1_n)
 
         l1, l2 = np.dot(F.T, x2_n), np.dot(F, x1_n)
@@ -137,11 +153,18 @@ def plot_epipolar_lines(img1, img2, F, cor1, cor2):
         y1, y2 = -x * l1[0] / l1[1] - l1[2] / l1[1], -x * l2[0] / l2[1] - l2[2] / l2[1]
         print ('First image: ', x, y1)
         print ('Second image: ', x, y2)
+        
+        # epipolar lines
+        # ax1.plot(x, -x * l1[0] / l1[1] - l1[2] / l1[1], c = color)
+        # ax2.plot(x, -x * l2[0] / l2[1] - l2[2] / l2[1], c = color)
 
-        ax1.plot(x, -x * l1[0] / l1[1] - l1[2] / l1[1], c = color)
-        ax1.scatter(x1[0], x1[1], s = 35, edgecolors = 'b', facecolors = color)
-        ax2.plot(x, -x * l2[0] / l2[1] - l2[2] / l2[1], c = color)
-        ax2.scatter(x2[0], x2[1], s = 35, edgecolors = 'b', facecolors = color)
+        # keypoints
+        ax1.scatter(x1[0], x1[1], s = 35, edgecolors = color, facecolors = color)
+        ax2.scatter(x2[0], x2[1], s = 35, edgecolors = color, facecolors = color)
+        
+        ax1.plot(x, -x * l2[0] / l2[1] - l2[2] / l2[1], c = color)
+        ax2.plot(x, -x * l1[0] / l1[1] - l1[2] / l1[1], c = color)
+        
         
         # x1[0], x1[1] = x1[0] / h1, x1[1] / w1
         # x2[0], x2[1] = x2[0] / h2, x2[1] / w2
@@ -156,9 +179,10 @@ def plot_epipolar_lines(img1, img2, F, cor1, cor2):
 
 corner_len = len(cor1)
 cor1, cor2 = np.array(cor1).T, np.array(cor2).T
-cor1_homog = np.concatenate((cor1, np.zeros(corner_len).reshape((1, -1))), axis = 0)
-cor2_homog = np.concatenate((cor2, np.zeros(corner_len).reshape((1, -1))), axis = 0)
+cor1_homog = np.concatenate((cor1, np.ones(corner_len).reshape((1, -1))), axis = 0)
+cor2_homog = np.concatenate((cor2, np.ones(corner_len).reshape((1, -1))), axis = 0)
 
+print (cor1_homog.shape)
 plot_epipolar_lines(test, target_show, mat, cor1_homog, cor2_homog)
 
 

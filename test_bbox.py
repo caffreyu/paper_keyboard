@@ -90,7 +90,7 @@ def click_event(event, x, y, flags, params):
 
         # if len(inp) > 0 and len(pts) % 2 == 0: inp.pop(-1)
  
-    print (pts, inp)
+    # print (pts, inp)
  
 if __name__ == "__main__":
  

@@ -45,7 +45,7 @@ target_g = cv2.cvtColor(target, cv2.COLOR_BGR2GRAY)
 
 # cor1, cor2 = get_matches(test, target)
 
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(-1)
 font = cv2.FONT_HERSHEY_SIMPLEX
 
 s_time, e_time = 0, 0

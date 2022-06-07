@@ -5,11 +5,16 @@ import pyautogui as gui
 import numpy as np
 import pickle as pk
 import sys
+import csv
 
 if len(sys.argv) > 1:
     WAIT_TIME = int(sys.argv[1]) # time waited until asking for keyboard input
 else: 
     WAIT_TIME = 5
+
+fname = 'record.csv'
+fh = open(fname, 'w', newline = '')
+csvwriter = csv.writer(fh)
 
 # Load pickle file
 f = open('stored_pattern.pickle', 'rb')
@@ -39,6 +44,7 @@ while True:
             lm = handLms.landmark[12]
             h, w, c = img.shape
             cx, cy = int(lm.x * w), int(lm.y * h)
+            csvwriter.writerow([cx, cy])
             cv2.circle(img, (cx, cy), 5, (255, 0, 255), cv2.FILLED)
 
             c_time = time.time()
@@ -51,8 +57,8 @@ while True:
                 xe, ye = rd
 
                 if xs < cx < xe and ys < cy < ye:
-                    print (v)
-                    gui.press(v)
+                    # print (v)
+                    # gui.press(v)
 
                     # Update time
                     p_time = c_time
