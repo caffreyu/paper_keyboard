@@ -12,6 +12,9 @@ pts = []
 inp = []
 RED = (0, 0, 255)
 
+f = open('./data/pickle/keyboard.pickle', 'rb')
+keyboard_ls = pickle.load(f)
+
 def mark_current(fname):
 
     cap = cv2.VideoCapture(-1)
@@ -54,13 +57,11 @@ def click_event(event, x, y, flags, params):
                 window.withdraw()
                 answer = tkinter.simpledialog.askstring('Input ', 'Type the value for this box:  ')
                 
-                if answer: 
+                if isinstance(answer, str) and answer.lower() in keyboard_ls: 
                     inp.append(answer)
                     break
                 else:
-                    tkinter.messagebox.showinfo('Warning', 'Space is not a valid value!')
-                    # greetings = tk.Label(text='Type the value for this box: ')
-                    # greetings.pack()
+                    tkinter.messagebox.showinfo('Warning', 'Input is not valid!')
 
                 window.update()
             
@@ -125,5 +126,5 @@ if __name__ == "__main__":
     
     print (dic)
 
-    with open('stored_pattern.pickle', 'wb') as f:
+    with open('./data/pickle/stored_pattern.pickle', 'wb') as f:
         pickle.dump(dic, f)
