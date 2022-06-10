@@ -95,9 +95,7 @@ def plot_epipolar_lines(img1, img2, F, cor1, cor2):
     """ ==========
     YOUR CODE HERE
     ========== """
-    
-    # print (cor1.shape, cor2.shape)
-    
+        
     n = cor1.shape[1]
     h1, w1, _ = img1.shape
     h2, w2, _ = img2.shape
@@ -116,31 +114,24 @@ def plot_epipolar_lines(img1, img2, F, cor1, cor2):
     ax2.axis('off')
     
     for i in range(n):
+        
         x1, x2 = cor1[:, i], cor2[:, i]
-        # l1, l2 = np.dot(F.T, x2), np.dot(F, x1)
         color = np.random.rand(3,)
 
         x1_n, x2_n = deepcopy(x1), deepcopy(x2)
 
-        # x1_n[0], x1_n[1] = x1_n[0] / h1, x1_n[1] / w1
-        # x2_n[0], x2_n[1] = x2_n[0] / h2, x2_n[1] / w2
-        # print (x2_n.T @ F)
-        print (x2_n.T @ F @ x1_n)
+        # print (x2_n.T @ F @ x1_n)
 
         l1, l2 = np.dot(F.T, x2_n), np.dot(F, x1_n)
 
-        # y1, y2 = -x * l1[0] / l1[1] - l1[2] / l1[1], -x * l2[0] / l2[1] - l2[2] / l2[1]
-        # print ('First image: ', x, y1)
-        # print ('Second image: ', x, y2)
-
-        ax1.plot(x, -x * l1[0] / l1[1] - l1[2] / l1[1], c = color)
-        ax1.scatter(x1[0], x1[1], s = 35, edgecolors = 'b', facecolors = color)
-        ax2.plot(x, -x * l2[0] / l2[1] - l2[2] / l2[1], c = color)
-        ax2.scatter(x2[0], x2[1], s = 35, edgecolors = 'b', facecolors = color)
+        # keypoints
+        ax1.scatter(x1[0], x1[1], s = 35, edgecolors = color, facecolors = color)
+        ax2.scatter(x2[0], x2[1], s = 35, edgecolors = color, facecolors = color)
         
-        # x1[0], x1[1] = x1[0] / h1, x1[1] / w1
-        # x2[0], x2[1] = x2[0] / h2, x2[1] / w2
-        # print (x2.T @ F @ x1)
-
+        # epipolar lines
+        ax1.plot(x, -x * l2[0] / l2[1] - l2[2] / l2[1], c = color)
+        ax2.plot(x, -x * l1[0] / l1[1] - l1[2] / l1[1], c = color)
+        
     
     plt.show()
+

@@ -59,10 +59,6 @@ while True:
             csvwriter.writerow([cx, cy])
             cv2.circle(img, (cx, cy), 5, (255, 0, 255), cv2.FILLED)
 
-            # c_time = time.time()
-
-            # if c_time - p_time <= 0.3: continue
-
             for k, v in dic.items():
                 lu, rd = k # lu: left up; rd: right bottom
                 xs, ys = lu
@@ -79,10 +75,6 @@ while True:
                     cv2.putText(img, '(' + str(cx) + ', ' + str(cy) + ')', (cx - 10, cy - 10), 
                                 cv2.FONT_HERSHEY_PLAIN, 1.5,
                                 (255, 0, 255), 2)
-                    # cv2.putText()
-
-                    # print (p_x, p_y, cx, cy)
-                    # time.sleep(1)
 
                     c_stamp = time.time()
 
@@ -92,11 +84,9 @@ while True:
                         p_time = time.time()
                         p_x, p_y = cx, cy
                         break
-                        # p_char = v
                     else:
                         # low_s, high_s = strength[v]
                         # if low_s <= abs(p_x - cx) + abs(p_y - cy) <= high_s:
-                        # if p_x <= cx <= p_x + 5 and p_y + 10 <= cy <= p_y + 30: 
                         if p_x - 10 <= cx <= p_x + 10 and p_y + 8 <= cy <= p_y + 20:
                             c_press = time.time()
                             if c_press - p_press < 0.1: break
@@ -109,12 +99,6 @@ while True:
                             if c_time - p_time > 0.3:
                                 p_x, p_y = 0, 0
                         break
-                    
-                    # print (v)
-                    # gui.press(v)
-
-                    # Update time
-                    # p_time = c_time
 
     cv2.imshow('Image', img)
     cv2.waitKey(1)

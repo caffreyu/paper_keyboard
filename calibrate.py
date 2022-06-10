@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
-# Calibrate camera to get intrisic matrix, need more work
-
+# Calibrate camera to get intrisic matrix
 import cv2
 import numpy as np
 import os
@@ -25,9 +24,6 @@ objp[0,:,:2] = np.mgrid[0:CHECKERBOARD[0], 0:CHECKERBOARD[1]].T.reshape(-1, 2)
 prev_img_shape = None
 
 # Extracting path of individual image stored in a given directory
-# images = glob.glob('./images/logi/*.png')
-# images = glob.glob('./images/set2/*.png')
-# images = glob.glob('./images/logi/set2/*.png')
 images = glob.glob('./images/logi/auto_off/*.png')
 for fname in images:
     img = cv2.imread(fname)
@@ -36,11 +32,6 @@ for fname in images:
     # If desired number of corners are found in the image then ret = true
     ret, corners = cv2.findChessboardCorners(gray, CHECKERBOARD, cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
     
-    """
-    If desired number of corner are detected,
-    we refine the pixel coordinates and display 
-    them on the images of checker board
-    """
     if ret == True:
         objpoints.append(objp)
         # refining pixel coordinates for given 2d points.
@@ -51,25 +42,11 @@ for fname in images:
         # Draw and display the corners
         img = cv2.drawChessboardCorners(img, CHECKERBOARD, corners2, ret)
     
-    # cv2.namedWindow("output", cv2.WINDOW_NORMAL)
-    # img = cv2.resize(img, (248, 350))
-
-    print (fname)
-
     cv2.imshow('img',img)
     cv2.waitKey(0)
 
 cv2.destroyAllWindows()
 
-h,w = img.shape[:2]
-print (h, w)
-
-"""
-Performing camera calibration by 
-passing the value of known 3D points (objpoints)
-and corresponding pixel coordinates of the 
-detected corners (imgpoints)
-"""
 ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
 
 print("Camera matrix : \n")
