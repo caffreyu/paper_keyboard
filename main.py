@@ -78,7 +78,7 @@ while True:
 
                     c_stamp = time.time()
 
-                    if c_stamp - p_stamp < 0.1: break
+                    if c_stamp - p_stamp < 0.2: break
 
                     if p_x == p_y == 0:
                         p_time = time.time()
@@ -89,14 +89,14 @@ while True:
                         # if low_s <= abs(p_x - cx) + abs(p_y - cy) <= high_s:
                         if p_x - 10 <= cx <= p_x + 10 and p_y + 8 <= cy <= p_y + 20:
                             c_press = time.time()
-                            if c_press - p_press < 0.1: break
+                            if c_press - p_press < 0.3: break
                             print (v)
                             gui.press(v)
                             p_x, p_y = 0, 0
                             p_press = c_press
                         else:
                             c_time = time.time()
-                            if c_time - p_time > 0.3:
+                            if c_time - p_time > 0.2:
                                 p_x, p_y = 0, 0
                         break
 
