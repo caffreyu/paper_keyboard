@@ -4,6 +4,14 @@ Convert a piece of paper to a keyboard.
 UCSD ECE285 Introduction to Visual Learning (Spring 2022)
 Member: Hao Yu; Weilai Wei
 
+# Presentation Video
+
+<!-- [![Link To Video](https://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)]([https://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE](https://youtu.be/SbM5hYGWnSw)) -->
+
+[Link to Video](https://youtu.be/SbM5hYGWnSw)
+
+
+
 # Instructions on Installation and Usage
 
 __Installation__
